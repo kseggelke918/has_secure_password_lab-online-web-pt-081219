@@ -3,10 +3,14 @@ class UsersController < ApplicationController
   end
 
   def create
-    @user = User.create(user_params)
-    # return head(:forbidden) unless @user.save
-    return head(:forbidden) unless @user.authenticate(params[:password])
-    session[:user_id] = @user.id 
+    user = User.create(user_params)
+    if user.password == user.password_confirmation && user.save 
+      session[:user_id] = user.id 
+      redirect_to root_url 
+    else 
+      flash[:notice] = "You need a username and a password to proceed"
+      redirect_to users_new_url  
+    end 
   end
   
   private 
